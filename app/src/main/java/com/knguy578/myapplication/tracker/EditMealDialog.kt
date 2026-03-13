@@ -1,87 +1,83 @@
 package com.knguy578.myapplication.tracker
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun EditMealSheetContent(
+fun EditMealDialog(
     meal: Meal,
+    onDismiss: () -> Unit,
     onSave: (Meal) -> Unit,
-    onDelete: (String) -> Unit,
-    onCancel: () -> Unit
+    onDelete: (String) -> Unit
 ) {
-    var name by remember { mutableStateOf(meal.name) }
-    var caloriesText by remember { mutableStateOf(meal.calories.toString()) }
+    var name by rememberSaveable { mutableStateOf(meal.name) }
+    var caloriesText by rememberSaveable { mutableStateOf(meal.calories.toString()) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+    Dialog(
+        onDismissRequest = { onDismiss() },
+        properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
-
-        Text(
-            text = "Edit Meal",
-            style = MaterialTheme.typography.titleLarge
-        )
-
-        OutlinedTextField(
-            value = name,
-            onValueChange = { name = it },
-            label = { Text("Meal Name") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        OutlinedTextField(
-            value = caloriesText,
-            onValueChange = { caloriesText = it },
-            label = { Text("Calories") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+        Card(
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .padding(16.dp)
         ) {
-            TextButton(
-                onClick = { onDelete(meal.id) }
+            Column(
+                modifier = Modifier.padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Delete", color = MaterialTheme.colorScheme.error)
-            }
 
-            Row {
-                TextButton(onClick = onCancel) {
-                    Text("Cancel")
-                }
+                Text(
+                    text = "Edit Meal",
+                    style = MaterialTheme.typography.titleLarge
+                )
 
-                Button(
-                    onClick = {
-                        val calories = caloriesText.toIntOrNull() ?: return@Button
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Meal Name") },
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-                        val updatedMeal = meal.copy(
-                            name = name,
-                            calories = calories
-                        )
+                OutlinedTextField(
+                    value = caloriesText,
+                    onValueChange = { caloriesText = it },
+                    label = { Text("Calories") },
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-                        onSave(updatedMeal)
-                    }
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Text("Save")
+                    Button(
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error
+                        ),
+                        onClick = { onDelete(meal.id) }
+                    ) {
+                        Text("Delete")
+                    }
+
+                    Button(onClick = { onDismiss() }) {
+                        Text("Cancel")
+                    }
+
+                    Button(
+                        onClick = {
+                            val calories = caloriesText.toIntOrNull() ?: return@Button
+                            onSave(meal.copy(name = name, calories = calories))
+                        }
+                    ) {
+                        Text("Save")
+                    }
                 }
             }
         }
