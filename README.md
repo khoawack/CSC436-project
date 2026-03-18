@@ -41,7 +41,7 @@ trackED is an Android calorie-tracking app built with Jetpack Compose that helps
 3. Run the `app` configuration on an emulator or Android device (API 24+).
 
 ## What to Call Out (Above and Beyond)
-- Built and deployed a custom Python FastAPI backend that integrates with the OpenAI API for meal analysis.
+- Built and deployed a custom Python FastAPI backend that integrates with the OpenAI API for meal analysis. Link to that repo: https://github.com/khoawack/fast-api-csc-436
 - Persisted local meal history with Room and calendar/day-level summaries.
 - Careful consideration for project code structure.
 
