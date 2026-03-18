@@ -4,7 +4,7 @@
 trackED is an Android calorie-tracking app built with Jetpack Compose that helps users log meals by day, estimate calories from meal descriptions using a remote analysis API, and review their intake history in both a daily list and a calendar view. Users can add, edit, and delete meals, then view total calories for the selected day and quick per-day calorie summaries over time.
 
 ## Figma Design
-- Figma link: **ADD_YOUR_FIGMA_LINK_HERE**
+- Figma link: **https://www.figma.com/design/bECxzciV3NU387ezUDrVgx/CSC-436?node-id=1-5&t=6UXKiyJ9AnTrjfC3-0**
 - Optional exported screens: place PNGs in `docs/figma/` and reference them here.
 
 ## Android + Jetpack Compose Features Used
