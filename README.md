@@ -1,6 +1,8 @@
 # trackED (CSC 436 Project)
 
 ## Project Description
+Important note: There is a render backend api used that needs to be "warmed up" before it works so on initial call. It will take up to 2-3 minutes to output the first response. After that it should output responses in like 10-20 seconds.
+
 trackED is an Android calorie-tracking app built with Jetpack Compose that helps users log meals by day, estimate calories from meal descriptions using a remote analysis API, and review their intake history in both a daily list and a calendar view. Users can add, edit, and delete meals, then view total calories for the selected day and quick per-day calorie summaries over time.
 
 ## Figma Design
