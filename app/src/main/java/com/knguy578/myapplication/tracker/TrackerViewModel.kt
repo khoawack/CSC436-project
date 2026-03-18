@@ -2,7 +2,11 @@ package com.knguy578.myapplication.tracker
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import com.knguy578.myapplication.data.MealRepository
+import com.knguy578.myapplication.data.local.MealLocalRepository
+import com.knguy578.myapplication.data.local.db.AppDatabase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -10,12 +14,30 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.UUID
 
-class TrackerViewModel : ViewModel() {
+class TrackerViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository = MealRepository()
+    private val localRepository = MealLocalRepository(
+        AppDatabase.getInstance(application).mealDao()
+    )
 
     private val _uiState = MutableStateFlow(TrackerUiState())
     val uiState: StateFlow<TrackerUiState> = _uiState
+
+    init {
+        loadMeals()
+    }
+
+    private fun loadMeals() {
+        viewModelScope.launch {
+            localRepository.observeMeals().collect { meals ->
+                val mealsByDate = meals.groupBy { it.date }
+                _uiState.update { current ->
+                    current.copy(mealsByDate = mealsByDate)
+                }
+            }
+        }
+    }
 
     fun selectDate(date: LocalDate) {
         _uiState.update { current ->
@@ -71,6 +93,10 @@ class TrackerViewModel : ViewModel() {
                 mealsByDate = current.mealsByDate + (currentDate to updatedMealsForDate)
             )
         }
+
+        viewModelScope.launch {
+            localRepository.insertMeal(newMeal)
+        }
     }
 
     fun setLoading(isLoading: Boolean) {
@@ -98,9 +124,17 @@ class TrackerViewModel : ViewModel() {
                 mealsByDate = current.mealsByDate + (currentDate to updatedMeals)
             )
         }
+
+        viewModelScope.launch {
+            localRepository.deleteMeal(mealId)
+        }
     }
 
     fun updateMeal(updatedMeal: Meal) {
+        viewModelScope.launch {
+            localRepository.updateMeal(updatedMeal)
+        }
+
         _uiState.update { current ->
             val date = updatedMeal.date
 

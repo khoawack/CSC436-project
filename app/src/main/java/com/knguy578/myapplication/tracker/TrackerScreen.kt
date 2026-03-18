@@ -20,9 +20,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.knguy578.myapplication.R
 
 @Composable
 fun TrackerScreen(
@@ -46,20 +48,33 @@ fun TrackerContent(
     uiState: TrackerUiState,
     onEditMeal: (Meal) -> Unit
 ) {
-    LazyColumn(
-        modifier = modifier,
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        items(uiState.mealsForSelectedDate) { meal ->
-            CalorieCard(
-                mealName = meal.name,
-                calories = "${meal.calories} cals",
-                reason = meal.reason,
-                onEditClick = {
-                    onEditMeal(meal)
-                }
+    if (uiState.mealsForSelectedDate.isEmpty()) {
+        Box(
+            modifier = modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = stringResource(R.string.tracker_empty_state),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+        }
+    } else {
+        LazyColumn(
+            modifier = modifier,
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(uiState.mealsForSelectedDate) { meal ->
+                CalorieCard(
+                    mealName = meal.name,
+                    calories = "${meal.calories} cals",
+                    reason = meal.reason,
+                    onEditClick = {
+                        onEditMeal(meal)
+                    }
+                )
+            }
         }
     }
 }
@@ -160,12 +175,13 @@ fun CalorieCard(
 @Preview(showBackground = true)
 @Composable
 private fun TrackerScreenPreview() {
-    val fakeViewModel = TrackerViewModel()
-
     MaterialTheme {
-        TrackerScreen(
+        TrackerContent(
             modifier = Modifier.fillMaxSize(),
-            trackerViewModel = fakeViewModel,
+            uiState = TrackerUiState(
+                mealsByDate = mapOf(),
+                selectedDate = java.time.LocalDate.now()
+            ),
             onEditMeal = {}
         )
     }

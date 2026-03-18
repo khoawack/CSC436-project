@@ -28,6 +28,7 @@ import com.knguy578.myapplication.tracker.EditMealDialog
 import com.knguy578.myapplication.tracker.TrackerScreen
 import com.knguy578.myapplication.tracker.TrackerViewModel
 import com.knguy578.myapplication.tracker.Meal
+import androidx.compose.ui.platform.LocalContext
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -49,7 +50,15 @@ fun TrackerApp(
 ) {
 
     val navController = rememberNavController()
-    val trackerViewModel: TrackerViewModel = viewModel()
+    val context = LocalContext.current
+    val trackerViewModel: TrackerViewModel = viewModel(
+        factory = object : androidx.lifecycle.ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+                return TrackerViewModel(context.applicationContext as android.app.Application) as T
+            }
+        }
+    )
     val uiState by trackerViewModel.uiState.collectAsState()
     val selectedDate = uiState.selectedDate
     val today = LocalDate.now()
@@ -187,6 +196,7 @@ fun TrackerApp(
 
             composable<TrackerRoutes.Calendar> {
                 CalendarScreen(
+                    caloriesByDate = uiState.totalCaloriesByDate,
                     onDateSelected = { date ->
                         trackerViewModel.selectDate(date)
                         navController.navigate(TrackerRoutes.Home) {

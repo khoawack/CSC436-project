@@ -11,6 +11,9 @@ data class TrackerUiState(
     val mealsForSelectedDate: List<Meal>
         get() = mealsByDate[selectedDate] ?: emptyList()
 
+    val totalCaloriesByDate: Map<LocalDate, Int>
+        get() = mealsByDate.mapValues { (_, meals) -> meals.sumOf { it.calories } }
+
     val totalCaloriesForSelectedDate: Int
         get() = mealsForSelectedDate.sumOf { it.calories }
 }

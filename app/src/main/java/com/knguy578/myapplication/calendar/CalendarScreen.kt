@@ -12,8 +12,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.knguy578.myapplication.R
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.TextStyle
@@ -22,6 +24,7 @@ import java.util.*
 @Composable
 fun CalendarScreen(
     modifier: Modifier = Modifier,
+    caloriesByDate: Map<LocalDate, Int> = emptyMap(),
     onDateSelected: (LocalDate) -> Unit = {}
 ) {
 
@@ -68,6 +71,7 @@ fun CalendarScreen(
                 DayButton(
                     date = date,
                     isToday = date == today,
+                    calories = caloriesByDate[date] ?: 0,
                     onClick = { onDateSelected(date) }
                 )
             }
@@ -114,6 +118,7 @@ fun CalendarTopBar(
 fun DayButton(
     date: LocalDate,
     isToday: Boolean,
+    calories: Int,
     onClick: () -> Unit
 ) {
 
@@ -129,11 +134,19 @@ fun DayButton(
                 MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
-        Box(
-            contentAlignment = Alignment.Center,
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxSize()
         ) {
             Text(text = date.dayOfMonth.toString())
+            if (calories > 0) {
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = stringResource(R.string.calendar_day_calories, calories),
+                    style = MaterialTheme.typography.labelSmall
+                )
+            }
         }
     }
 }

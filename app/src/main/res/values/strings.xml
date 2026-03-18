@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">My Application</string>
     <string name="trackED">trackED</string>
+    <string name="tracker_empty_state">Nothing tracked yet</string>
+    <string name="calendar_day_calories">%1$d cal</string>
 </resources>
